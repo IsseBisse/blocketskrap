@@ -24,7 +24,8 @@ def get_page_contents(url):
 		{"tag": "div", "class_regex": ".*bYSeDO", "info_key": "description"}
 		]
 
-	contents = dict()
+	id_ = url.split("/")[-1]
+	contents = {"id": id_, "url": url}
 	for item in items:
 		regex = re.compile(item["class_regex"])
 		
