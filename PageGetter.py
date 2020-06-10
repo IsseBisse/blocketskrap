@@ -1,12 +1,11 @@
 import requests
 from bs4 import BeautifulSoup
 import re
-import os
 
 from datetime import datetime
 import locale
 
-import json
+
 
 # NOTE: computer locale settings must be set to swedish for this to work
 # Explicitly setting sv_SE for some reason doesn't work...
@@ -39,20 +38,6 @@ def get_page_contents(url):
 				contents[item["info_key"]] = raw_text
 
 	return contents
-
-def append_page_contents_to_file(path, append_content):
-	
-	if not os.path.exists(path) or os.path.getsize(path) == 0:
-		with open(path, "w") as new_json_file:
-			new_json_file.write("[]")
-
-	with open(path, "r") as old_json_file:
-		old_content = json.load(old_json_file)
-
-	old_content += (append_content)
-
-	with open(path, "w") as json_file:
-		json.dump(old_content, json_file)
 
 if __name__ == '__main__':
 	
