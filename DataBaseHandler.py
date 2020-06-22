@@ -22,6 +22,8 @@ def remove_duplicates(old_content, append_content):
 
 def append_page_contents_to_file(path, append_content):
 	
+	path = os.path.join(DATA_ROOT, path)
+
 	if not os.path.exists(path) or os.path.getsize(path) == 0:
 		with open(path, "w") as new_json_file:
 			new_json_file.write("[]")
