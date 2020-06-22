@@ -1,5 +1,11 @@
 import tensorflow as tf
 from tensorflow import keras
+import keras.wrappers.scikit_learn as kw_learn
+import sklearn.model_selection as model_sel
+
+import json
+import re
+import numpy as np
 
 '''
 DATA
@@ -57,7 +63,11 @@ def load_and_preprocess(path):
 			if "Ålder" in item["details"] and item["details"]["Ålder"] >= valid_age[0] and item["details"]["Ålder"] <= valid_age[1]: 
 				valid_data.append(item)
 
-	return valid_data
+	num_items = len(valid_data)
+	Y = np.array([item["price"] for item in valid_data])
+	X = np.array([[item["details"]["Ålder"], item["details"]["Miltal"]] for item in valid_data])
+
+	return (X, Y)
 
 '''
 MODEL
@@ -73,13 +83,21 @@ def create_model(input_shape):
 
 	return model
 
+def evaluate_model(model, X, Y):
+	# evaluate model
+	estimator = kw_learn.KerasRegressor(build_fn=model, epochs=100, batch_size=5, verbose=0)
+	kfold = model_sel.KFold(n_splits=10)
+	results = model_sel.cross_val_score(estimator, X, Y, cv=kfold)
+	print("Baseline: %.2f (%.2f) MSE" % (results.mean(), results.std()))
+
 def main():
-	path = "data/v70__hela_sverige__post2008.json"
-	data = load_and_preprocess(path)
+	# Load data
+	path = "../data/v70__hela_sverige__post2008.json"
+	(X, Y) = load_and_preprocess(path)
 
-	print(data.shape)
-
-	#model = create_model(data.shape)
+	# Create model
+	model = create_model(X.shape[1])
+	evaluate_model(model, X, Y)
 
 if __name__ == '__main__':
 	main()
