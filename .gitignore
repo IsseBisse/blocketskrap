@@ -1,5 +1,6 @@
 temp.py
 __pycache__/
+.venv
 
 # Selenium
 debug.log
