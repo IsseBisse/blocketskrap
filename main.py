@@ -1,6 +1,6 @@
 import PageGetter
 from PageStructureHandler import PageStructureHandler
-import DataBaseHandler
+import JsonHandler
 
 WATCH_ITEMS = [
 	# {"url": "https://www.blocket.se/annonser/hela_sverige/elektronik/ljud_bild/foto_videokameror?cg=5042&q=fuji%2A",
@@ -32,7 +32,7 @@ def main():
 				print("%d " % i, end="")
 
 		print("Appending to database file... ", end="")
-		DataBaseHandler.append_page_contents_to_file(item["json_path"], all_ad_contents)
+		JsonHandler.append_page_contents_to_file(item["json_path"], all_ad_contents)
 		print("Done!")
 
 	del structure_handler
