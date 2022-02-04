@@ -1,6 +1,5 @@
 import os
 import json
-import hashlib
 
 DATA_ROOT = "data/"
 
