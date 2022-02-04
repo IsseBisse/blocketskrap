@@ -17,7 +17,7 @@ class PageStructureHandler:
 
 		# Setup
 		opts = Options()
-		#opts.set_headless()
+		opts.headless = True
 		self.driver = Chrome(executable_path='chromedriver', options=opts)  # Optional argument, if not specified will search path.
 
 	def __delete__(self):
