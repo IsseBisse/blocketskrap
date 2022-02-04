@@ -1,14 +1,20 @@
 import time
+import re
+
+import chromedriver_autoinstaller
 from selenium.webdriver import Chrome
 from selenium.webdriver.chrome.options import Options
-
-import re
 
 import PageGetter
 
 class PageStructureHandler:
 
 	def __init__(self):
+		# Check for correct chrome version
+		chromedriver_autoinstaller.install()  # Check if the current version of chromedriver exists
+                                      # and if it doesn't exist, download it automatically,
+                                      # then add chromedriver to path
+
 		# Setup
 		opts = Options()
 		#opts.set_headless()
