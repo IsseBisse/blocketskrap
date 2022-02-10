@@ -27,7 +27,10 @@ def main():
 		for i, link in enumerate(ad_links):
 			contents = PageGetter.get_page_contents(link, item["descriptor"])
 			all_ad_contents.append(contents)
-		
+
+			print(contents)
+			break
+
 			if i % div == 0:
 				print("%d " % i, end="")
 
