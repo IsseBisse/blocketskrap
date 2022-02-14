@@ -60,9 +60,11 @@ class ServerHandler:
     """
     def create_database(self, name):
         self.cursor.execute(f"CREATE DATABASE {name}")
+        self.conn.commit()
 
     def delete_database(self, name):
         self.cursor.execute(f"DROP DATABASE {name}")
+        self.conn.commit()
     
     def get_databases(self):
         self.cursor.execute("SHOW DATABASES")
@@ -120,19 +122,29 @@ class DatabaseHandler():
     def create_table(self, name, columns):
         columns_string = ", ".join(columns)
         self.cursor.execute(f"CREATE TABLE {name} ({columns_string})")
+        self.conn.commit()
 
     def drop_table(self, name):
         self.cursor.execute(f"DROP TABLE {name}")
+        self.conn.commit()
 
     def get_tables(self):
         self.cursor.execute("SHOW TABLES")
         return [item[0] for item in self.cursor.fetchall()]
     
     """
-    VEHICLE TYPES
+    INSERTS
     """
-    def add_vehicle_type(self, engine_type, horsepower): 
+    def insert_vehicle_type(self, engine_type, horsepower): 
         self.cursor.execute("INSERT INTO vehicle_types (engine_type, horsepower) VALUES (%s, %s)", (engine_type, horsepower))
+        self.conn.commit()
+
+    def insert_vehicle_ad(self, data_dict):
+        value_names_string = ", ".join(data_dict.keys())
+        value_placeholders_string = ", ".join(["%s" for _ in data_dict])
+        values = tuple(data_dict.values())
+
+        self.cursor.execute(f"INSERT INTO ads ({value_names_string}) VALUES ({value_placeholders_string})", values)
         self.conn.commit()
 
 def setup():
@@ -152,19 +164,42 @@ def setup():
     server_handler.disconnect()
     
     # Setup tables
-    EXPECTED_TABLES = [("vehicle_types", 
-                            ["id INT AUTO_INCREMENT PRIMARY KEY",
-                            "engine_type VARCHAR(8) NOT NULL",
-                            "horsepower SMALLINT"]),
+    EXPECTED_TABLES = [
+                        # ("vehicle_types", 
+                        #     ["id INT AUTO_INCREMENT PRIMARY KEY",
+                        #     "engine_type VARCHAR(16) NOT NULL",
+                        #     "fuel VARCHAR(16)",
+                        #     "is_automatic BOOL",
+                        #     "horsepower SMALLINT",
+                        #     "is_all_wheel_drive BOOL",
+                        #     ]),
                         ("ads",
                             ["id INT AUTO_INCREMENT PRIMARY KEY",
-                            "vehicle_id INT",
-                            "FOREIGN KEY(vehicle_id) REFERENCES vehicle_types(id)",
+                            "ad_id INT",
+                            "url VARCHAR(2048)",
+                            "heading VARCHAR(2048)",
+                            "price INT",
+                            "location VARCHAR(256)",
+                            # "vehicle_id INT",
+                            # "FOREIGN KEY(vehicle_id) REFERENCES vehicle_types(id)",
+                            "fuel_type VARCHAR(16)",
+                            "is_automatic BOOL",
+                            "mileage INT",
+                            "model_year YEAR",
+                            "body_type VARCHAR(16)",
+                            "is_awd BOOL",
+                            "horsepower SMALLINT",
+                            "color VARCHAR(16)",
                             "description MEDIUMTEXT"])]
 
     db_handler = DatabaseHandler({**DEFAULT_CONFIG, "database": "vehicle_ad_db"})
     db_handler.connect()
     
+    update_tables = True
+    if update_tables:
+        for table_name, _ in EXPECTED_TABLES[::-1]:
+            db_handler.drop_table(table_name)
+
     available_tables = db_handler.get_tables()
     for expected_table_name, columns in EXPECTED_TABLES:
         if expected_table_name not in available_tables:
@@ -178,11 +213,11 @@ def add_dummy_data():
     db_handler = DatabaseHandler({**DEFAULT_CONFIG, "database": "vehicle_ad_db"})
     db_handler.connect()
     
-    db_handler.add_vehicle_type("D4", 163)
+    db_handler.insert_vehicle_type("D4", 163)
 
 
 if __name__ == '__main__':
-    setup
-    add_dummy_data()
+    setup()
+    #add_dummy_data()
 
     
